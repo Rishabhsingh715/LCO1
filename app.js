@@ -5,6 +5,7 @@ const express = require('express');
 const app = express();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const auth = require('./middleware/auth');
 
 app.use(express.json());
 
@@ -96,7 +97,8 @@ app.post('/login', async (req, res)=>{
     }
 });
 
-app.get('/dashboard', (req, res)=>{
+app.get('/dashboard',auth, (req, res)=>{
+    console.log(req.user);
     res.send('<h1>Welcome to the secret page</h1>')
 });
 
