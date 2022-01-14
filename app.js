@@ -6,9 +6,10 @@ const app = express();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const auth = require('./middleware/auth');
+const cookieParser = require('cookie-parser');
 
 app.use(express.json());
-
+app.use(cookieParser());
 const User = require('./model/user');
 const res = require("express/lib/response");
 
@@ -87,7 +88,17 @@ app.post('/login', async (req, res)=>{
             )
             user.token = token;
             user.password = password;
-            res.status(200).json(user);
+            // res.status(200).json(user);
+            //if you want to use cookies
+            const options = {
+                expires: new Date(Date.now()+ 3*24*60*60*1000),
+                httpOnly: true,
+            };
+            res.status(200).cookie("token",token, options).json({
+                success: true,
+                token,
+                user,
+            });
         }
 
         res.status(400).send("Email or password is incorrect");
